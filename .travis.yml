@@ -3,13 +3,15 @@ language: php
 php:
   - 7.0
   - 7.1
-  - 7.2
 
 before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
+  - mkdir -p build/logs
+  - ls -al
 
-script: phpunit
+script:
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_success:
  - bash <(curl -s https://codecov.io/bash)
