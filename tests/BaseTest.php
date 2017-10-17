@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use GeorgeHanson\LaravelPersisters\BasePersister;
 use GeorgeHanson\LaravelPersisters\Tests\TestModel;
 use GeorgeHanson\LaravelPersisters\Contracts\Persister;
+use GeorgeHanson\LaravelPersisters\Exceptions\PersisterException;
 
 class BaseTest extends TestCase
 {
@@ -252,5 +253,92 @@ class BaseTest extends TestCase
 
 
         $this->assertTrue($stub->persist($data, $testModel));
+    }
+
+    public function testIfAnErrorOccursWhenCreatingTheArrayableItWillThrowAPersisterException()
+    {
+        $this->expectException(PersisterException::class);
+
+        $data = new Collection([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ]);
+
+        $stub = $this->getMockForAbstractClass(BasePersister::class);
+
+        $stub->keys = [
+            'first_name',
+            'last_name'
+        ];
+
+        $stub->expects($this->once())->method('create')->will($this->throwException(new \Exception));
+
+        $stub->persist($data);
+    }
+
+    public function testIfAnErrorOccursWhenCreatingTheArrayItWillThrowAPersisterException()
+    {
+        $this->expectException(PersisterException::class);
+
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ];
+
+        $stub = $this->getMockForAbstractClass(BasePersister::class);
+
+        $stub->keys = [
+            'first_name',
+            'last_name'
+        ];
+
+        $stub->expects($this->once())->method('create')->will($this->throwException(new \Exception));
+
+        $stub->persist($data);
+    }
+
+    public function testIfAnErrorOccursWhenUpdatingTheArrayableItWillThrowAPersisterException()
+    {
+        $this->expectException(PersisterException::class);
+
+        $testModel = new TestModel();
+
+        $data = new Collection([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ]);
+
+        $stub = $this->getMockForAbstractClass(BasePersister::class);
+
+        $stub->keys = [
+            'first_name',
+            'last_name'
+        ];
+
+        $stub->expects($this->once())->method('update')->will($this->throwException(new \Exception));
+
+        $stub->persist($data, $testModel);
+    }
+
+    public function testIfAnErrorOccursWhenUpdatingTheArrayItWillThrowAPersisterException()
+    {
+        $this->expectException(PersisterException::class);
+        $testModel = new TestModel();
+
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ];
+
+        $stub = $this->getMockForAbstractClass(BasePersister::class);
+
+        $stub->keys = [
+            'first_name',
+            'last_name'
+        ];
+
+        $stub->expects($this->once())->method('update')->will($this->throwException(new \Exception));
+
+        $stub->persist($data, $testModel);
     }
 }
