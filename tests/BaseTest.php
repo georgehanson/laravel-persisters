@@ -255,6 +255,37 @@ class BaseTest extends TestCase
         $this->assertTrue($stub->persist($data, $testModel));
     }
 
+    public function testIfNoDataIsPresentForKeyItReturnsNull()
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ];
+
+        $testModel = new TestModel();
+
+        $stub = $this->getMockForAbstractClass(BasePersister::class);
+
+        $stub->keys = [
+            'first_name',
+            'last_name',
+            'email'
+        ];
+
+        $stub->expects($this->once())->method('update')->with(
+            $this->callback(function ($data) {
+                $keys = array_keys($data);
+                return (count($keys) === 3) && $keys[0] === 'first_name' && $keys[1] == 'last_name' && $keys[2] == 'email';
+            }),
+            $this->callback(function ($model) use ($testModel) {
+                return $model === $testModel;
+            })
+        )->will($this->returnValue(true));
+
+
+        $this->assertTrue($stub->persist($data, $testModel));
+    }
+
     public function testIfAnErrorOccursWhenCreatingTheArrayableItWillThrowAPersisterException()
     {
         $this->expectException(PersisterException::class);

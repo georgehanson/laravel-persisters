@@ -81,6 +81,12 @@ abstract class BasePersister implements Persister
             $data = array_filter($data, function ($key) {
                 return in_array($key, $this->keys);
             }, ARRAY_FILTER_USE_KEY);
+
+            foreach ($this->keys as $key) {
+                if (! array_key_exists($key, $data)) {
+                    $data[$key] = null;
+                }
+            }
         }
 
         array_walk($data, [$this, 'transform']);
